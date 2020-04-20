@@ -61,7 +61,7 @@ def post_to_slack status_update, message
 	# Post it to Slack
   HTTParty.post slack_webhook, body: {text: formatted_message.to_s, username: "OutOfOfficeBot", channel: "back" }.to_json, headers: {'content-type' => 'application/json'}
 
-end 
+end
 # ----------------------------------------------------------------------
 #     How you handle your Alexa
 # ----------------------------------------------------------------------
@@ -78,6 +78,54 @@ class CustomHandler < AlexaSkillsRuby::Handler
     logger.info 'GetZodiacHoroscopeIntent processed'
   end
 
+  on_intent("HERE") do
+    # add a response to Alexa
+    response.set_output_speech_text("I've updated your status to Here ")
+    # create a card response in the alexa app
+    response.set_simple_card("Out of Office App", "Status is in the office.")
+    # log the output if needed
+    logger.info 'Here processed'
+    # send a message to slack
+    update_status "HERE"
+  end
+
+  on_intent("BE_RIGHT_BACK") do
+    # add a response to Alexa
+    response.set_output_speech_text("I've updated your status to BE_RIGHT_BACK ")
+    # create a card response in the alexa app
+    response.set_simple_card("Out of Office App", "Status will be right back.")
+    # log the output if needed
+    logger.info 'BE_RIGHT_BACK processed'
+    # send a message to slack
+    update_status "BE_RIGHT_BACK"
+  end
+
+  on_intent("GONE_HOME") do
+    # add a response to Alexa
+    response.set_output_speech_text("I've updated your status to GONE_HOME ")
+    # create a card response in the alexa app
+    response.set_simple_card("Out of Office App", "Status has gone home.")
+    # log the output if needed
+    logger.info 'GONE_HOME processed'
+    # send a message to slack
+    update_status "GONE_HOME"
+  end
+
+  on_intent("DO_NOT_DISTURB") do
+    # add a response to Alexa
+    response.set_output_speech_text("I've updated your status to DO_NOT_DISTURB ")
+    # create a card response in the alexa app
+    response.set_simple_card("Out of Office App", "Status is DO_NOT_DISTURB.")
+    # log the output if needed
+    logger.info 'DO_NOT_DISTURB processed'
+    # send a message to slack
+    update_status "DO_NOT_DISTURB"
+  end
+
+  on_intent("AMAZON.HelpIntent") do
+    response.set_output_speech_text("You can ask me to tell you the current out of office status by saying current status. You can update your stats by saying tell out of office i'll be right back, i've gone home, i'm busy, i'm here or i'll be back in 10 minutes")
+    logger.info 'HelpIntent processed'    
+  end
 end
 
 # ----------------------------------------------------------------------
