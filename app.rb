@@ -123,7 +123,15 @@ class CustomHandler < AlexaSkillsRuby::Handler
   end
 
   on_intent("AMAZON.HelpIntent") do
-    response.set_output_speech_text("You can ask me to tell you the current out of office status by saying current status. You can update your stats by saying tell out of office i'll be right back, i've gone home, i'm busy, i'm here or i'll be back in 10 minutes")
+    response.set_output_speech_text("<speak>You can ask me to tell you the current out of office status by saying
+      <break time='200ms'/><emphasis level='moderate'>current status</emphasis>.
+      You can update your stats by saying <break time='200ms'/>
+      <emphasis level='moderate'>tell out of office i'll be right back,
+      <break time='150ms'/>i've gone home,
+      <break time='150ms'/>i'm busy,
+      <break time='150ms'/>i'm here
+      <break time='150ms'/>or
+      <break time='150ms'/>i'll be back in 10 minutes</emphasis></speak>")
     logger.info 'HelpIntent processed'
   end
 
