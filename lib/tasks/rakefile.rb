@@ -1,5 +1,11 @@
 desc "This task is called by the Heroku scheduler add-on"
-task :test => :environment do
+# task :test => :environment do
+#   puts "testing..."
+#   # NewsFeed.update
+#   puts "done."
+# end
+
+task :test do
   puts "testing..."
   # NewsFeed.update
   puts "done."

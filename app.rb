@@ -4,6 +4,7 @@ require "sinatra"
 require 'alexa_skills_ruby'
 require 'httparty'
 require 'iso8601'
+require 'twilio-ruby'
 # require 'whenever'
 
 
@@ -18,6 +19,75 @@ end
 
 # enable sessions for this project
 enable :sessions
+
+def determine_response body
+	#customize response message according to user input
+
+	#keyword lists
+	greeting_kwd = ['hi', 'hello', 'hey']
+	who_kwd = ['who']
+	what_kwd = ['what', 'features', 'functions', 'actions', 'help']
+	where_kwd = ['where']
+	when_kwd = ['when', 'time']
+	why_kwd = ['why']
+	joke_kwd = ['joke']
+	fact_kwd = ['fact']
+	funny_kwd = ['lol', 'haha', 'hh']
+  weather_kwd = ['weather']
+  diet_kwd = ['diet']
+
+	body = body.downcase.strip
+	if include_keywords body, greeting_kwd
+		return "Hi there, my app tells you a little about me.<br>"
+	elsif include_keywords body, who_kwd
+		return "It's MeBot created by Daniel here!<br>
+						If you want to know more about me, you can input 'fact' to the Body parameter."
+	elsif include_keywords body, what_kwd
+		return "You can ask anything you are interested about me.<br>"
+	elsif include_keywords body, where_kwd
+		return "I'm in Pittsburgh~<br>"
+	elsif include_keywords body, when_kwd
+		return "The bot is made in Spring 2020.<br>"
+	elsif include_keywords body, why_kwd
+		return "It was made for class project of 49714-pfop.<br>"
+	elsif include_keywords body, joke_kwd
+		array_of_lines = IO.readlines("jokes.txt")
+		return array_of_lines.sample
+	elsif include_keywords body, fact_kwd
+		array_of_lines = IO.readlines("facts.txt")
+		return array_of_lines.sample
+	elsif include_keywords body, funny_kwd
+		return "Nice one right lol."
+  elsif include_keywords body, weather_kwd
+  # elsif body == 'weather'
+		options = { units: "metric", APPID: ENV["OPENWEATHER_API_KEY"] }
+    response = OpenWeather::Current.city("Berlin, DE", options)
+    # obj = JSON.parse(response)
+    # puts response.class
+    temp = response['main']['temp']
+    desc = response['weather'][0]['description']
+    msg = "The weather is currently #{desc} with a temperature of #{temp} degrees."
+    return msg
+  elsif include_keywords body, diet_kwd
+    return get_nutrients body
+	else
+    message = "Sorry, your input cannot be understood by the bot.<br>
+						Try using two parameters called Body and From."
+		# send_to_slack message
+    return message
+	end
+end
+
+def include_keywords body, keywords
+	# check if string contains any word in the keywords array
+	keywords.each do |keyword|
+		puts "now checking" + keyword
+		if body.downcase.include?(keyword)
+			return true
+		end
+  end
+	return false
+end
 
 def get_nutrients body
   url = 'https://trackapi.nutritionix.com/v2/natural/nutrients'
@@ -37,6 +107,18 @@ def get_nutrients body
 
   msg = "You consumed approximately #{total_cal} calories in total with #{total_protein} grams of protein and #{total_fat} grams of fat."
   return msg
+end
+
+def send_sms message, to_number
+	client = Twilio::REST::Client.new ENV["TWILIO_ACCOUNT_SID"], ENV["TWILIO_AUTH_TOKEN"]
+	# Include a message here
+
+	# this will send a message from any end point
+	client.api.account.messages.create(
+		from: ENV["TWILIO_FROM"],
+		to: to_number,
+		body: message
+	)
 end
 # def update_status status, duration = nil
 #
@@ -245,6 +327,14 @@ get '/test/scheduler' do
     sleep 3
   end
 end
+
+get "/sms/incoming" do
+  body = params[:Body] || ""
+  sender = params[:From] || ""
+  message = determine_response body
+  send_sms message, sender
+end
+
 
 post '/incoming/alexa' do
   content_type :json
