@@ -149,17 +149,17 @@ class CustomHandler < AlexaSkillsRuby::Handler
     # update_status "DO_NOT_DISTURB"
   end
 
-  # on_intent("AMAZON.HelpIntent") do
-  #   response.set_output_speech_ssml("<speak>You can ask me to tell you the current out of office status by saying
-  #     <break time='200ms'/><emphasis level='moderate'>current status</emphasis>.
-  #     You can update your stats by saying <break time='200ms'/>
-  #     <emphasis level='moderate'>tell out of office i'll be right back,
-  #     <break time='150ms'/>i've gone home,
-  #     <break time='150ms'/>i'm busy,
-  #     <break time='150ms'/>i'm here
-  #     <break time='150ms'/>or
-  #     <break time='150ms'/>i'll be back in 10 minutes</emphasis></speak>")
-  #   logger.info 'HelpIntent processed'
+  on_intent("AMAZON.HelpIntent") do
+    response.set_output_speech_ssml("<speak>You can ask me to log your meal status by saying
+      <break time='200ms'/><emphasis level='moderate'>log meal</emphasis>.
+      and then saying what food you had <break time='200ms'/>.
+      For example, you can say
+      <break time='150ms'/>I had an apple for breakfast,
+      <break time='100ms'/>or
+      <break time='100ms'/>I ate a hamburger just now.
+      <break time='150ms'/>Calories and more data about the food will be responded to you.
+      </speak>")
+    logger.info 'HelpIntent processed'
   # end
 
   # on_intent("BACK_IN") do
