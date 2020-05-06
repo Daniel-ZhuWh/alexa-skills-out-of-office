@@ -8,7 +8,7 @@ require 'twilio-ruby'
 require 'json'
 # require 'whenever'
 
-
+$current_sender = ''
 # ----------------------------------------------------------------------
 
 # Load environment variables using Dotenv. If a .env file exists, it will
@@ -115,7 +115,8 @@ def determine_response body
 
   # meal logging
   elsif session[:last_msg] == 'log_meal' || session[:last_msg] == 'further_log_meal'
-    send_sms get_nutrients body
+    temp = get_nutrients body
+    send_sms temp, $current_sender
     if session[:last_msg] != 'further_log_meal'
       session[:last_msg] = 'default'
     end
@@ -293,6 +294,7 @@ get "/sms/incoming" do
   end
   body = params[:Body] || ""
   sender = params[:From] || ""
+  $current_sender = sender
   message = determine_response body
   send_sms message, sender
   message
