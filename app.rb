@@ -140,7 +140,7 @@ class CustomHandler < AlexaSkillsRuby::Handler
     # create a card response in the alexa app
     response.set_simple_card("Out of Office App", "Status is DO_NOT_DISTURB.")
     # log the output if needed
-    logger.info 'DO_NOT_DISTURB processed'
+    logger.info 'LOG_MEAL processed'
     # send a message to slack
     update_status "DO_NOT_DISTURB"
   end
