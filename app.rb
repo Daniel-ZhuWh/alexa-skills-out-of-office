@@ -122,6 +122,29 @@ class CustomHandler < AlexaSkillsRuby::Handler
     update_status "DO_NOT_DISTURB"
   end
 
+  on_intent("REQUEST_TO_LOG_MEAL") do
+    # add a response to Alexa
+    response.set_output_speech_text("Sure, what food did you have?")
+    # create a card response in the alexa app
+    response.set_simple_card("Out of Office App", "Status is LOG MEAL.")
+    # log the output if needed
+    logger.info 'REQUEST_TO_LOG_MEAL processed'
+    # send a message to slack
+    # update_status "DO_NOT_DISTURB"
+  end
+
+  on_intent("LOG_MEAL") do
+    food_log = request.intent.slots["food_log"]
+    # add a response to Alexa
+    response.set_output_speech_text("I've logged #{food_log}")
+    # create a card response in the alexa app
+    response.set_simple_card("Out of Office App", "Status is DO_NOT_DISTURB.")
+    # log the output if needed
+    logger.info 'DO_NOT_DISTURB processed'
+    # send a message to slack
+    update_status "DO_NOT_DISTURB"
+  end
+
   on_intent("AMAZON.HelpIntent") do
     response.set_output_speech_ssml("<speak>You can ask me to tell you the current out of office status by saying
       <break time='200ms'/><emphasis level='moderate'>current status</emphasis>.
