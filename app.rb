@@ -68,6 +68,11 @@ end
 
 class CustomHandler < AlexaSkillsRuby::Handler
 
+  on_launch() do
+    response.set_output_speech_text("Hi there, I'm your diet bot.")
+    logger.info 'Lauch request processed'
+  end
+
   on_intent("GetZodiacHoroscopeIntent") do
     slots = request.intent.slots
     response.set_output_speech_text("Horoscope Text")
