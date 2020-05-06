@@ -164,7 +164,7 @@ class CustomHandler < AlexaSkillsRuby::Handler
     # log the output if needed
     logger.info "#{res}"
     # send a message to slack
-    update_status "DO_NOT_DISTURB"
+    # update_status "DO_NOT_DISTURB"
   end
 
   on_intent("AMAZON.HelpIntent") do
