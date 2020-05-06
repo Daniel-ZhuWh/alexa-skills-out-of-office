@@ -162,7 +162,7 @@ class CustomHandler < AlexaSkillsRuby::Handler
     # create a card response in the alexa app
     response.set_simple_card("Diet Bot App", "#{res}")
     # log the output if needed
-    logger.info 'LOG_MEAL processed'
+    logger.info "#{res}"
     # send a message to slack
     update_status "DO_NOT_DISTURB"
   end
