@@ -227,27 +227,6 @@ get "/sms/incoming" do
   sender = params[:From] || ""
   message = determine_response body
   send_sms message, sender
-
-  media = 'https://www.metmuseum.org/-/media/images/visit/met-fifth-avenue/fifthave_teaser.jpg'
-  twiml = Twilio::TwiML::MessagingResponse.new do |r|
-    r.message do |m|
-
-      # add the text of the response
-      m.body( message )
-
-      # add media if it is defined
-      unless media.nil?
-        m.media( media )
-			end
-    end
-  end
-
-  # increment the session counter
-  # session["counter"] += 1
-
-  # send a response to twilio
-  content_type 'text/xml'
-  twiml.to_s
 end
 
 
@@ -282,5 +261,3 @@ end
 #   METHODS
 #   Add any custom methods below
 # ----------------------------------------------------------------------
-
-private
