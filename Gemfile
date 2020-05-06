@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 gem 'sinatra'
 gem 'json'
 gem 'whenever'
+gem 'rake'
 
 # to avoid installing postgres use
 # bundle install --without production
