@@ -149,6 +149,7 @@ class CustomHandler < AlexaSkillsRuby::Handler
     response.set_simple_card("Out of Office App", "Status is LOG MEAL.")
     # log the output if needed
     logger.info 'REQUEST_TO_LOG_MEAL processed'
+    response.should_end_session = false
     # send a message to slack
     # update_status "DO_NOT_DISTURB"
   end
