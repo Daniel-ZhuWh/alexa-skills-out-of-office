@@ -160,7 +160,7 @@ class CustomHandler < AlexaSkillsRuby::Handler
       <break time='150ms'/>Calories and more data about the food will be responded to you.
       </speak>")
     logger.info 'HelpIntent processed'
-  # end
+  end
 
   # on_intent("BACK_IN") do
   #
