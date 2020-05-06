@@ -34,47 +34,41 @@ def determine_response body
 	fact_kwd = ['fact']
 	funny_kwd = ['lol', 'haha', 'hh']
   weather_kwd = ['weather']
-  diet_kwd = ['diet']
+  diet_kwd = ['track diet', 'track', 'log']
 
 	body = body.downcase.strip
-	if include_keywords body, greeting_kwd
-		return "Hi there, my app tells you a little about me.<br>"
-	elsif include_keywords body, who_kwd
-		return "It's MeBot created by Daniel here!<br>
-						If you want to know more about me, you can input 'fact' to the Body parameter."
-	elsif include_keywords body, what_kwd
-		return "You can ask anything you are interested about me.<br>"
-	elsif include_keywords body, where_kwd
-		return "I'm in Pittsburgh~<br>"
-	elsif include_keywords body, when_kwd
-		return "The bot is made in Spring 2020.<br>"
-	elsif include_keywords body, why_kwd
-		return "It was made for class project of 49714-pfop.<br>"
-	elsif include_keywords body, joke_kwd
-		array_of_lines = IO.readlines("jokes.txt")
-		return array_of_lines.sample
-	elsif include_keywords body, fact_kwd
-		array_of_lines = IO.readlines("facts.txt")
-		return array_of_lines.sample
-	elsif include_keywords body, funny_kwd
-		return "Nice one right lol."
-  elsif include_keywords body, weather_kwd
-  # elsif body == 'weather'
-		options = { units: "metric", APPID: ENV["OPENWEATHER_API_KEY"] }
-    response = OpenWeather::Current.city("Berlin, DE", options)
-    # obj = JSON.parse(response)
-    # puts response.class
-    temp = response['main']['temp']
-    desc = response['weather'][0]['description']
-    msg = "The weather is currently #{desc} with a temperature of #{temp} degrees."
-    return msg
-  elsif include_keywords body, diet_kwd
+  if session[:last_msg] == 'default'
+    if include_keywords body, greeting_kwd
+  		return "Hi there, my app tells you a little about me.<br>"
+  	elsif include_keywords body, who_kwd
+  		return "It's MeBot created by Daniel here!<br>
+  						If you want to know more about me, you can input 'fact' to the Body parameter."
+  	elsif include_keywords body, what_kwd
+  		return "You can ask anything you are interested about me.<br>"
+  	elsif include_keywords body, where_kwd
+  		return "I'm in Pittsburgh~<br>"
+  	elsif include_keywords body, when_kwd
+  		return "The bot is made in Spring 2020.<br>"
+  	elsif include_keywords body, why_kwd
+  		return "It was made for class project of 49714-pfop.<br>"
+  	elsif include_keywords body, joke_kwd
+  		array_of_lines = IO.readlines("jokes.txt")
+  		return array_of_lines.sample
+  	elsif include_keywords body, fact_kwd
+  		array_of_lines = IO.readlines("facts.txt")
+  		return array_of_lines.sample
+  	elsif include_keywords body, funny_kwd
+  		return "Nice one right lol."
+    elsif include_keywords body, diet_kwd
+      session[:last_msg] = 'log_meal'
+      return "Sure, what food did you have?"
+  	else
+      message = "Sorry, your input cannot be understood by the bot.<br>
+  						Try using two parameters called Body and From."
+      return message
+    end
+  elsif session[:last_msg] == 'log_meal'
     return get_nutrients body
-	else
-    message = "Sorry, your input cannot be understood by the bot.<br>
-						Try using two parameters called Body and From."
-		# send_to_slack message
-    return message
 	end
 end
 
@@ -120,54 +114,7 @@ def send_sms message, to_number
 		body: message
 	)
 end
-# def update_status status, duration = nil
-#
-# 	# gets a corresponding message
-#   message = get_message_for status, duration
-# 	# posts it to slack
-#   post_to_slack status, message
-#
-# end
-#
-# def get_message_for status, duration
-#
-# 	# Default response
-#   message = "other/unknown"
-#
-# 	# looks up a message based on the Status provided
-#   if status == "HERE"
-#     message = ENV['APP_USER'].to_s + " is in the office."
-#   elsif status == "BACK_IN"
-#     message = ENV['APP_USER'].to_s + " will be back in #{(duration/60).round} minutes"
-#   elsif status == "BE_RIGHT_BACK"
-#     message = ENV['APP_USER'].to_s + " will be right back"
-#   elsif status == "GONE_HOME"
-#     message = ENV['APP_USER'].to_s + " has left for the day. Check back tomorrow."
-#   elsif status == "DO_NOT_DISTURB"
-#     message = ENV['APP_USER'].to_s + " is busy. Please do not disturb."
-#   end
-#
-# 	# return the appropriate message
-#   message
-#
-# end
-#
-# def post_to_slack status_update, message
-#
-# 	# look up the Slack url from the env
-#   slack_webhook = ENV['SLACK_WEBHOOK']
-#
-# 	# create a formatted message
-#   formatted_message = "*Status Changed for #{ENV['APP_USER'].to_s} to: #{status_update}*\n"
-#   formatted_message += "#{message} "
-#
-# 	# Post it to Slack
-#   HTTParty.post slack_webhook, body: {text: formatted_message.to_s, username: "OutOfOfficeBot", channel: "back" }.to_json, headers: {'content-type' => 'application/json'}
-#
-# end
-# ----------------------------------------------------------------------
-#     How you handle your Alexa
-# ----------------------------------------------------------------------
+
 
 class CustomHandler < AlexaSkillsRuby::Handler
 
@@ -176,65 +123,11 @@ class CustomHandler < AlexaSkillsRuby::Handler
     logger.info 'Lauch request processed'
   end
 
-  # on_intent("GetZodiacHoroscopeIntent") do
-  #   slots = request.intent.slots
-  #   response.set_output_speech_text("Horoscope Text")
-  #   #response.set_output_speech_ssml("<speak><p>Horoscope Text</p><p>More Horoscope text</p></speak>")
-  #   response.set_reprompt_speech_text("Reprompt Horoscope Text")
-  #   #response.set_reprompt_speech_ssml("<speak>Reprompt Horoscope Text</speak>")
-  #   response.set_simple_card("title", "content")
-  #   logger.info 'GetZodiacHoroscopeIntent processed'
-  # end
-  #
-  # on_intent("HERE") do
-  #   # add a response to Alexa
-  #   response.set_output_speech_text("I've updated your status to Here ")
-  #   # create a card response in the alexa app
-  #   response.set_simple_card("Out of Office App", "Status is in the office.")
-  #   # log the output if needed
-  #   logger.info 'Here processed'
-  #   # send a message to slack
-  #   update_status "HERE"
-  # end
-  #
-  # on_intent("BE_RIGHT_BACK") do
-  #   # add a response to Alexa
-  #   response.set_output_speech_text("I've updated your status to BE_RIGHT_BACK ")
-  #   # create a card response in the alexa app
-  #   response.set_simple_card("Out of Office App", "Status will be right back.")
-  #   # log the output if needed
-  #   logger.info 'BE_RIGHT_BACK processed'
-  #   # send a message to slack
-  #   update_status "BE_RIGHT_BACK"
-  # end
-  #
-  # on_intent("GONE_HOME") do
-  #   # add a response to Alexa
-  #   response.set_output_speech_text("I've updated your status to GONE_HOME ")
-  #   # create a card response in the alexa app
-  #   response.set_simple_card("Out of Office App", "Status has gone home.")
-  #   # log the output if needed
-  #   logger.info 'GONE_HOME processed'
-  #   # send a message to slack
-  #   update_status "GONE_HOME"
-  # end
-  #
-  # on_intent("DO_NOT_DISTURB") do
-  #   # add a response to Alexa
-  #   response.set_output_speech_text("I've updated your status to DO_NOT_DISTURB ")
-  #   # create a card response in the alexa app
-  #   response.set_simple_card("Out of Office App", "Status is DO_NOT_DISTURB.")
-  #   # log the output if needed
-  #   logger.info 'DO_NOT_DISTURB processed'
-  #   # send a message to slack
-  #   update_status "DO_NOT_DISTURB"
-  # end
-
   on_intent("REQUEST_TO_LOG_MEAL") do
     # add a response to Alexa
     response.set_output_speech_text("Sure, what food did you have?")
     # create a card response in the alexa app
-    response.set_simple_card("Out of Office App", "Status is LOG MEAL.")
+    response.set_simple_card("Diet Bot App", "Meal logged. Have a nice day!")
     # log the output if needed
     logger.info 'REQUEST_TO_LOG_MEAL processed'
     response.should_end_session = false
@@ -256,18 +149,18 @@ class CustomHandler < AlexaSkillsRuby::Handler
     # update_status "DO_NOT_DISTURB"
   end
 
-  on_intent("AMAZON.HelpIntent") do
-    response.set_output_speech_ssml("<speak>You can ask me to tell you the current out of office status by saying
-      <break time='200ms'/><emphasis level='moderate'>current status</emphasis>.
-      You can update your stats by saying <break time='200ms'/>
-      <emphasis level='moderate'>tell out of office i'll be right back,
-      <break time='150ms'/>i've gone home,
-      <break time='150ms'/>i'm busy,
-      <break time='150ms'/>i'm here
-      <break time='150ms'/>or
-      <break time='150ms'/>i'll be back in 10 minutes</emphasis></speak>")
-    logger.info 'HelpIntent processed'
-  end
+  # on_intent("AMAZON.HelpIntent") do
+  #   response.set_output_speech_ssml("<speak>You can ask me to tell you the current out of office status by saying
+  #     <break time='200ms'/><emphasis level='moderate'>current status</emphasis>.
+  #     You can update your stats by saying <break time='200ms'/>
+  #     <emphasis level='moderate'>tell out of office i'll be right back,
+  #     <break time='150ms'/>i've gone home,
+  #     <break time='150ms'/>i'm busy,
+  #     <break time='150ms'/>i'm here
+  #     <break time='150ms'/>or
+  #     <break time='150ms'/>i'll be back in 10 minutes</emphasis></speak>")
+  #   logger.info 'HelpIntent processed'
+  # end
 
   # on_intent("BACK_IN") do
   #
@@ -329,6 +222,7 @@ get '/test/scheduler' do
 end
 
 get "/sms/incoming" do
+  session[:last_msg] = 'default'
   body = params[:Body] || ""
   sender = params[:From] || ""
   message = determine_response body
