@@ -13,6 +13,7 @@ GEM
       activesupport (>= 4.2)
       addressable (~> 2.5)
       multi_json (~> 1.0)
+    chronic (0.10.2)
     concurrent-ruby (1.1.6)
     dotenv (2.7.5)
     httparty (0.18.0)
@@ -44,6 +45,8 @@ GEM
     tilt (2.0.10)
     tzinfo (1.2.7)
       thread_safe (~> 0.1)
+    whenever (1.0.0)
+      chronic (>= 0.6.3)
     zeitwerk (2.3.0)
 
 PLATFORMS
@@ -56,6 +59,7 @@ DEPENDENCIES
   iso8601
   json
   sinatra
+  whenever
 
 BUNDLED WITH
    2.1.4

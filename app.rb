@@ -4,6 +4,8 @@ require "sinatra"
 require 'alexa_skills_ruby'
 require 'httparty'
 require 'iso8601'
+# require 'whenever'
+
 
 # ----------------------------------------------------------------------
 
@@ -29,7 +31,11 @@ def get_nutrients body
     total_protein += food['nf_protein']
     total_cal += food['nf_calories']
   end
-  msg = "You consumed #{total_cal} calories in total with #{total_protein} grams of protein and #{total_fat} grams of fat."
+  total_fat = total_fat.to_i
+  total_protein = total_protein.to_i
+  total_cal = total_cal.to_i
+
+  msg = "You consumed approximately #{total_cal} calories in total with #{total_protein} grams of protein and #{total_fat} grams of fat."
   return msg
 end
 # def update_status status, duration = nil
@@ -228,9 +234,17 @@ get '/' do
   404
 end
 
-
+# while true do
+#   puts "3 seconds"
+#   sleep 3
+# end
 # THE APPLICATION ID CAN BE FOUND IN THE
-
+get '/test/scheduler' do
+  while true do
+    puts "3 seconds"
+    sleep 3
+  end
+end
 
 post '/incoming/alexa' do
   content_type :json
