@@ -167,11 +167,11 @@ def determine_response body
   elsif session[:last_msg] == 'default'
     puts "default"
     if include_keywords body, greeting_kwd
-  		message = "Hi there, it's Diet Bot🤖. My app helps you log your meals.\nLog meal by saying 'Track meal'.\nIf you are new to me, don't worry👌. Start tutorial by saying 'tutorial'"
+  		message = "Hi there, it's Diet Bot🤖."
   	elsif include_keywords body, who_kwd
   		message = "It's Diet Bot created by Daniel here!\nIf you want to know more about me, you can say 'fact'."
   	elsif include_keywords body, what_kwd
-  		message = "Hi there, it's Diet Bot🤖. My app helps you log your meals.\nLog meal by saying 'Track meal'.\nIf you are new to me, don't worry👌. Start tutorial by saying 'tutorial'"
+  		message = "I help you log your meals💪.\nLog meal by saying 'Track meal'.\nIf you are new to me, don't worry👌. Start tutorial by saying 'tutorial'"
   	elsif include_keywords body, where_kwd
   		message = "I'm in Pittsburgh~<br>"
   	elsif include_keywords body, when_kwd
