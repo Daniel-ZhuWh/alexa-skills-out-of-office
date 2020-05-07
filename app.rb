@@ -295,7 +295,7 @@ class CustomHandler < AlexaSkillsRuby::Handler
     summary = get_summary
     response.set_output_speech_text("#{res} #{summary}")
     # create a card response in the alexa app
-    response.set_simple_card("Meal logged", "#{res}\nCalories: #{results[1]}g\nProtein: #{results[2]}g\nFat: #{results[3]}g")
+    response.set_simple_card("Meal logged", "#{res}\nCalories: #{results[1]}cals\nProtein: #{results[2]}g\nFat: #{results[3]}g")
     # log the output if needed
     logger.info "#{res}"
     # send a message to slack
