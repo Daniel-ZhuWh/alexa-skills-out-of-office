@@ -277,7 +277,7 @@ class CustomHandler < AlexaSkillsRuby::Handler
     # add a response to Alexa
     response.set_output_speech_text("Sure, what food did you have?")
     # create a card response in the alexa app
-    response.set_simple_card("Diet Bot App", "Meal logged. Have a nice day!")
+    response.set_simple_card("Logging meal", "You can tell me what you ate by saying 'I had...' or 'I ate...'")
     # log the output if needed
     logger.info 'REQUEST_TO_LOG_MEAL processed'
     response.should_end_session = false
@@ -294,7 +294,7 @@ class CustomHandler < AlexaSkillsRuby::Handler
     summary = get_summary
     response.set_output_speech_text("#{res} #{summary}")
     # create a card response in the alexa app
-    response.set_simple_card("Diet Bot App", "#{res}")
+    response.set_simple_card("Meal logged", "#{res}\nCalories: #{results[1]}g\nProtein: #{results[2]}g\nFat: #{results[3]}g")
     # log the output if needed
     logger.info "#{res}"
     # send a message to slack
@@ -312,6 +312,7 @@ class CustomHandler < AlexaSkillsRuby::Handler
       <break time='150ms'/>Calories and more data about the food will be responded to you.
       </speak>")
     logger.info 'HelpIntent processed'
+    response.should_end_session = false
   end
 
   # on_intent("BACK_IN") do
