@@ -129,13 +129,26 @@ def determine_response body
     cal = results[1].to_f
     tutorial_update_log "lunch", cal
     session[:tutorial_intent] = 'ask_for_dinner'
-    message = "You had about #{cal} calories for lunch.\nWould you like to tell me about your dinner then?"
+    message1 = "You had about #{cal} calories for lunch."
+    message2 = get_summary
+    send_sms message1, $current_sender
+    sleep(2)
+    send_sms message2, $current_sender
+    sleep(2)
+    message = "Would you like to tell me about your dinner then?\nYou can try to say something like '8 hamburgers' to exceed the daily calorie limit and see what will happen😇."
   elsif session[:tutorial_intent] == 'ask_for_dinner' && session[:mode] == 'tutorial'
     results = get_nutrients body
     cal = results[1].to_f
     tutorial_update_log "dinner", cal
     session[:tutorial_intent] = 'send_summary'
-    message = "You had about #{cal} calories for dinner.\nDo you want to see a summary of your today's meal info?"
+    message1 = "You had about #{cal} calories for dinner."
+    message2 = get_summary
+    send_sms message1, $current_sender
+    sleep(2)
+    send_sms message2, $current_sender
+    sleep(2)
+    message = "Do you want to see a summary of your today's meal info?"
+
   elsif session[:tutorial_intent] == 'send_summary' && session[:mode] == 'tutorial'
     # results = get_nutrients body
     # cal = results[1]
