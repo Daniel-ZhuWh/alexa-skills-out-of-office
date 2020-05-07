@@ -247,7 +247,7 @@ def get_nutrients body
     total_protein = total_protein.to_i
     total_cal = total_cal.to_i
 
-    msg = "You consumed approximately #{total_cal} calories in total with #{total_protein} grams of protein and #{total_fat} grams of fat."
+    msg = "You consumed approximately #{total_cal} calories."
     return msg, total_cal, total_protein, total_fat
   end
 end
@@ -291,8 +291,8 @@ class CustomHandler < AlexaSkillsRuby::Handler
     results = get_nutrients food_log
     res = results[0]
     update_log results[1].to_i, results[2].to_i, results[3].to_i
-    res += get_summary
-    response.set_output_speech_text("#{res}")
+    summary += get_summary
+    response.set_output_speech_text("#{res} #{summary}")
     # create a card response in the alexa app
     response.set_simple_card("Diet Bot App", "#{res}")
     # log the output if needed
@@ -314,41 +314,30 @@ class CustomHandler < AlexaSkillsRuby::Handler
     logger.info 'HelpIntent processed'
   end
 
-  on_intent("BACK_IN") do
-
-		# Access the slots
-    slots = request.intent.slots
-    puts slots.to_s
-
-		# Duration is returned in a particular format
-		# Called ISO8601. Translate this into seconds
-    duration = ISO8601::Duration.new( request.intent.slots["duration"] ).to_seconds
-
-		# This will downsample the duration from a default seconds
-		# To...
-    if duration > 60 * 60 * 24
-      days = duration/(60 * 60 * 24).round
-      response.set_output_speech_text("I've set you away for #{ days } days")
-    elsif duration > 60 * 60
-      hours = duration/(60 * 60 ).round
-      response.set_output_speech_text("I've set you away for #{ hours } hours")
-    else
-      mins = duration/(60).round
-      response.set_output_speech_text("I've set you away for #{ mins } minutes")
-    end
-    logger.info 'BackIn processed'
-    update_status "BACK_IN", duration
-  end
+  # on_intent("BACK_IN") do
   #
-  # on_intent("TEST") do
-  #   response.set_output_speech_ssml("<speak>
-  #   Welcome to Car-Fu.
-  #   <audio src='soundbank://soundlibrary/transportation/amzn_sfx_car_accelerate_01' />
-  #   You can order a ride, or request a fare estimate.
-  #   Which will it be?
-  #   </speak>")
+	# 	# Access the slots
+  #   slots = request.intent.slots
+  #   puts slots.to_s
   #
-  #   logger.info 'TEST processed'
+	# 	# Duration is returned in a particular format
+	# 	# Called ISO8601. Translate this into seconds
+  #   duration = ISO8601::Duration.new( request.intent.slots["duration"] ).to_seconds
+  #
+	# 	# This will downsample the duration from a default seconds
+	# 	# To...
+  #   if duration > 60 * 60 * 24
+  #     days = duration/(60 * 60 * 24).round
+  #     response.set_output_speech_text("I've set you away for #{ days } days")
+  #   elsif duration > 60 * 60
+  #     hours = duration/(60 * 60 ).round
+  #     response.set_output_speech_text("I've set you away for #{ hours } hours")
+  #   else
+  #     mins = duration/(60).round
+  #     response.set_output_speech_text("I've set you away for #{ mins } minutes")
+  #   end
+  #   logger.info 'BackIn processed'
+  #   update_status "BACK_IN", duration
   # end
 end
 
