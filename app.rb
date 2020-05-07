@@ -111,6 +111,7 @@ def determine_response body
   if include_keywords body, tutorial_kwd
     message = "Sure. I'm a Diet Bot that can help you log the calories of your meals🤖.\nWould you like to tell me what you had for breakfast?"
     session[:mode] = 'tutorial'
+    initialize_log
     session[:tutorial_intent] = 'ask_for_breakfast'
   elsif session[:tutorial_intent] == 'ask_for_breakfast' && session[:mode] == 'tutorial'
     results = get_nutrients body
