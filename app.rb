@@ -291,7 +291,7 @@ class CustomHandler < AlexaSkillsRuby::Handler
     results = get_nutrients food_log
     res = results[0]
     update_log results[1].to_i, results[2].to_i, results[3].to_i
-    summary += get_summary
+    summary = get_summary
     response.set_output_speech_text("#{res} #{summary}")
     # create a card response in the alexa app
     response.set_simple_card("Diet Bot App", "#{res}")
