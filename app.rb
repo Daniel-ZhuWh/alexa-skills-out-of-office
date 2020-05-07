@@ -58,19 +58,19 @@ def initialize_log
 end
 
 def get_summary
-  motivate_quotes = ['The Struggle You Are In Today Is Developing The Strength You Need for Tomorrow',
-  'The Road May Be Bumpy But Stay Committed To The Process',
-  'If You Are Tired Of Starting Over, Stop Giving Up',
-  'It’s Not A Diet, It’s A Lifestyle Change',
-  'Will Is A Skill',
-  'Stressed Spelled Backwards Is Desserts. Coincidence? I think not!',
-  'Strive For Progress, Not Perfection',
-  'Success Is Never Certain, Failure Is Never Final',
-  'A Goal Without A Plan Is Just A Wish']
+  motivate_quotes = ['The struggle you are in today is developing the strength you need for tomorrow🙂',
+  'The road may be bumpy but stay committed to the process🙂',
+  'If you are tired of starting over, stop giving up🙂',
+  'It’s not a diet, it’s a lifestyle change🙂',
+  'Will is a skill🙂',
+  'Stressed spelled backwards is desserts. coincidence? I think not!🙃',
+  'Strive for progress, not perfection💪',
+  'Success is never certain, failure is never final🙂',
+  'A goal without a plan is just a wish🙂']
 
   obj = JSON.parse(IO.read('food_log.json'))
-  cal_sum = obj['cal_sum']
-  cal_limit = obj['cal_limit']
+  cal_sum = obj['cal_sum'].to_f
+  cal_limit = obj['cal_limit'].to_f
   dif = (cal_limit - cal_sum)/cal_limit
 
   if dif < -0.25
@@ -78,11 +78,11 @@ def get_summary
   elsif dif < 0
     message = "You've run out of your calorie limit for the day. Don't forget your plans~"
   elsif dif < 0.15
-    message = "You have less than 300 calories left for your daily limit. That's about the amount of a light breakfast."
+    message = "You have less than 300 calories left for your daily limit. That's about the amount of a light breakfast.🥪"
   elsif dif < 0.25
-    message = "You have less than 500 calories left for your daily limit. That's about a hamburger, but I'm not suggesting you to eat that!"
+    message = "You have less than 500 calories left for your daily limit. That's about a hamburger, but I'm not suggesting you to eat that!😂"
   else
-    message = "You have more than 500 calories left for your daily limit. That's more than a proper meal. Go ahead and enjoy the food!"
+    message = "You have more than 500 calories left for your daily limit. That's more than a proper meal. Go ahead and enjoy the food!😀"
   end
   return message
 end
@@ -109,24 +109,30 @@ def determine_response body
 	body = body.downcase.strip
 
   if include_keywords body, tutorial_kwd
-    message = "Sure. I'm a Diet Bot that can help you log the calories of your meals.\nWould you like to tell me what you had for breakfast?"
+    message = "Sure. I'm a Diet Bot that can help you log the calories of your meals🤖.\nWould you like to tell me what you had for breakfast?"
     session[:mode] = 'tutorial'
     session[:tutorial_intent] = 'ask_for_breakfast'
   elsif session[:tutorial_intent] == 'ask_for_breakfast' && session[:mode] == 'tutorial'
     results = get_nutrients body
-    cal = results[1]
+    cal = results[1].to_f
     tutorial_update_log "breakfast", cal
     session[:tutorial_intent] = 'ask_for_lunch'
-    message = "You had about #{cal} calories for breakfast.\nWould you like to tell me about your lunch then?"
+    message1 = "You had about #{cal} calories for breakfast."
+    message2 = get_summary
+    send_sms message1, $current_sender
+    sleep(2)
+    send_sms message2, $current_sender
+    sleep(2)
+    message = "Would you like to tell me about your lunch then?"
   elsif session[:tutorial_intent] == 'ask_for_lunch' && session[:mode] == 'tutorial'
     results = get_nutrients body
-    cal = results[1]
+    cal = results[1].to_f
     tutorial_update_log "lunch", cal
     session[:tutorial_intent] = 'ask_for_dinner'
     message = "You had about #{cal} calories for lunch.\nWould you like to tell me about your dinner then?"
   elsif session[:tutorial_intent] == 'ask_for_dinner' && session[:mode] == 'tutorial'
     results = get_nutrients body
-    cal = results[1]
+    cal = results[1].to_f
     tutorial_update_log "dinner", cal
     session[:tutorial_intent] = 'send_summary'
     message = "You had about #{cal} calories for dinner.\nDo you want to see a summary of your today's meal info?"
@@ -143,14 +149,15 @@ def determine_response body
 
     session[:tutorial_intent] = ''
     session[:mode] = ''
-    message = "【breakfast】#{b_cal} calories\n【lunch】#{l_cal} calories\n【dinner】#{d_cal} calories\nThat's the end of the tutorial!\nIn the future, you can text me 'Track' or 'Log' to log your meal info."
+    message = "【breakfast】#{b_cal} calories\n【lunch】#{l_cal} calories\n【dinner】#{d_cal} calories\nThat's the end of the tutorial!👍\nIn the future, you can text me 'Track' or 'Log' to log your meal info.\nOr you can just say to alexa 'Tell diet bot to log meal'😘\nVery handy, right?"
   elsif session[:last_msg] == 'default'
+    puts "default"
     if include_keywords body, greeting_kwd
-  		message = "Hi there, it's Diet Bot. My app helps you log your meals.\nLog meal by saying 'Track meal'.\nIf you are new to me, don't worry. Start tutorial by saying 'tutorial'"
+  		message = "Hi there, it's Diet Bot🤖. My app helps you log your meals.\nLog meal by saying 'Track meal'.\nIf you are new to me, don't worry👌. Start tutorial by saying 'tutorial'"
   	elsif include_keywords body, who_kwd
   		message = "It's Diet Bot created by Daniel here!\nIf you want to know more about me, you can say 'fact'."
   	elsif include_keywords body, what_kwd
-  		message = "I'm Diet Bot and can help you log your meals.\nStart by saying 'Track meal'."
+  		message = "Hi there, it's Diet Bot🤖. My app helps you log your meals.\nLog meal by saying 'Track meal'.\nIf you are new to me, don't worry👌. Start tutorial by saying 'tutorial'"
   	elsif include_keywords body, where_kwd
   		message = "I'm in Pittsburgh~<br>"
   	elsif include_keywords body, when_kwd
@@ -176,9 +183,9 @@ def determine_response body
 
   # meal logging
   elsif session[:last_msg] == 'log_meal' || session[:last_msg] == 'further_log_meal'
-    temp = get_nutrients body
-    temp = temp[0]
-    update_log temp[1], temp[2], temp[3]
+    results = get_nutrients body
+    temp = results[0]
+    update_log results[1].to_i, results[2].to_i, results[3].to_i
     send_sms temp, $current_sender
     if session[:last_msg] != 'further_log_meal'
       session[:last_msg] = 'default'
@@ -269,7 +276,8 @@ class CustomHandler < AlexaSkillsRuby::Handler
     # add a response to Alexa
     results = get_nutrients food_log
     res = results[0]
-    update_log results[1], results[2], results[3]
+    update_log results[1].to_i, results[2].to_i, results[3].to_i
+    res += get_summary
     response.set_output_speech_text("#{res}")
     # create a card response in the alexa app
     response.set_simple_card("Diet Bot App", "#{res}")
@@ -292,31 +300,31 @@ class CustomHandler < AlexaSkillsRuby::Handler
     logger.info 'HelpIntent processed'
   end
 
-  # on_intent("BACK_IN") do
-  #
-	# 	# Access the slots
-  #   slots = request.intent.slots
-  #   puts slots.to_s
-  #
-	# 	# Duration is returned in a particular format
-	# 	# Called ISO8601. Translate this into seconds
-  #   duration = ISO8601::Duration.new( request.intent.slots["duration"] ).to_seconds
-  #
-	# 	# This will downsample the duration from a default seconds
-	# 	# To...
-  #   if duration > 60 * 60 * 24
-  #     days = duration/(60 * 60 * 24).round
-  #     response.set_output_speech_text("I've set you away for #{ days } days")
-  #   elsif duration > 60 * 60
-  #     hours = duration/(60 * 60 ).round
-  #     response.set_output_speech_text("I've set you away for #{ hours } hours")
-  #   else
-  #     mins = duration/(60).round
-  #     response.set_output_speech_text("I've set you away for #{ mins } minutes")
-  #   end
-  #   logger.info 'BackIn processed'
-  #   update_status "BACK_IN", duration
-  # end
+  on_intent("BACK_IN") do
+
+		# Access the slots
+    slots = request.intent.slots
+    puts slots.to_s
+
+		# Duration is returned in a particular format
+		# Called ISO8601. Translate this into seconds
+    duration = ISO8601::Duration.new( request.intent.slots["duration"] ).to_seconds
+
+		# This will downsample the duration from a default seconds
+		# To...
+    if duration > 60 * 60 * 24
+      days = duration/(60 * 60 * 24).round
+      response.set_output_speech_text("I've set you away for #{ days } days")
+    elsif duration > 60 * 60
+      hours = duration/(60 * 60 ).round
+      response.set_output_speech_text("I've set you away for #{ hours } hours")
+    else
+      mins = duration/(60).round
+      response.set_output_speech_text("I've set you away for #{ mins } minutes")
+    end
+    logger.info 'BackIn processed'
+    update_status "BACK_IN", duration
+  end
   #
   # on_intent("TEST") do
   #   response.set_output_speech_ssml("<speak>
