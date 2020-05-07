@@ -314,8 +314,7 @@ class CustomHandler < AlexaSkillsRuby::Handler
       </speak>")
     response.set_simple_card("Help info", "You can ask me to log your meal status by saying
       LOG MEAL
-      and then saying what food you had.
-      For example, you can say
+      and then saying what food you had.For example, you can say
       I HAD AN APPLE FOR BREAKFAST
       or
       I ATE A HAMBURGER JUST NOW
