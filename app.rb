@@ -58,6 +58,7 @@ def initialize_log
 end
 
 def get_summary
+  #<break time='130ms'/>
   motivate_quotes = ['The struggle you are in today is developing the strength you need for tomorrow🙂',
   'The road may be bumpy but stay committed to the process🙂',
   'If you are tired of starting over, stop giving up🙂',
