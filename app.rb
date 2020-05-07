@@ -31,6 +31,32 @@ def update_log cal, pro, fat
   end
 end
 
+def tutorial_update_log mealtype, cal
+  obj = JSON.parse(IO.read('food_log.json'))
+  temp = mealtype + "_cal"
+  obj[temp] += cal
+  obj['cal_sum'] += cal
+  File.open("food_log.json","w") do |f|
+    f.write(obj.to_json)
+  end
+end
+
+def initialize_log
+  hash = {
+    # "foods" => [],
+    "breakfast_cal" => 0,
+    "lunch_cal" => 0,
+    "dinner_cal" => 0,
+    "cal_sum" => 0,
+    "pro_sum" => 0,
+    "fat_sum" => 0,
+    "cal_limit" => 2000
+  }
+  File.open("food_log.json","w") do |f|
+    f.write(hash.to_json)
+  end
+end
+
 def get_summary
   motivate_quotes = ['The Struggle You Are In Today Is Developing The Strength You Need for Tomorrow',
   'The Road May Be Bumpy But Stay Committed To The Process',
@@ -63,7 +89,7 @@ end
 
 def determine_response body
 	#customize response message according to user input
-  puts session[:last_msg]
+  # puts session[:last_msg]
 	#keyword lists
 	greeting_kwd = ['hi', 'hello', 'hey']
 	who_kwd = ['who']
@@ -71,51 +97,88 @@ def determine_response body
 	where_kwd = ['where']
 	when_kwd = ['when', 'time']
 	why_kwd = ['why']
-	joke_kwd = ['joke']
+	# joke_kwd = ['joke']
+
 	fact_kwd = ['fact']
-	funny_kwd = ['lol', 'haha', 'hh']
-  weather_kwd = ['weather']
+	# funny_kwd = ['lol', 'haha', 'hh']
+  # weather_kwd = ['weather']
   diet_kwd = ['track diet', 'track', 'log']
   summary_kwd = ['summary', 'summarize']
+  tutorial_kwd = ['tutorial']
 
 	body = body.downcase.strip
-  if session[:last_msg] == 'default'
+
+  if include_keywords body, tutorial_kwd
+    message = "Sure. I'm a Diet Bot that can help you log the calories of your meals.\nWould you like to tell me what you had for breakfast?"
+    session[:mode] = 'tutorial'
+    session[:tutorial_intent] = 'ask_for_breakfast'
+  elsif session[:tutorial_intent] == 'ask_for_breakfast' && session[:mode] == 'tutorial'
+    results = get_nutrients body
+    cal = results[1]
+    tutorial_update_log "breakfast", cal
+    session[:tutorial_intent] = 'ask_for_lunch'
+    message = "You had about #{cal} calories for breakfast.\nWould you like to tell me about your lunch then?"
+  elsif session[:tutorial_intent] == 'ask_for_lunch' && session[:mode] == 'tutorial'
+    results = get_nutrients body
+    cal = results[1]
+    tutorial_update_log "lunch", cal
+    session[:tutorial_intent] = 'ask_for_dinner'
+    message = "You had about #{cal} calories for lunch.\nWould you like to tell me about your dinner then?"
+  elsif session[:tutorial_intent] == 'ask_for_dinner' && session[:mode] == 'tutorial'
+    results = get_nutrients body
+    cal = results[1]
+    tutorial_update_log "dinner", cal
+    session[:tutorial_intent] = 'send_summary'
+    message = "You had about #{cal} calories for dinner.\nDo you want to see a summary of your today's meal info?"
+  elsif session[:tutorial_intent] == 'send_summary' && session[:mode] == 'tutorial'
+    # results = get_nutrients body
+    # cal = results[1]
+    # tutorial_update_log "dinner", cal
+    obj = JSON.parse(IO.read('food_log.json'))
+    b_cal = obj['breakfast_cal']
+    l_cal = obj['lunch_cal']
+    d_cal = obj['dinner_cal']
+
+    initialize_log
+
+    session[:tutorial_intent] = ''
+    session[:mode] = ''
+    message = "【breakfast】#{b_cal} calories\n【lunch】#{l_cal} calories\n【dinner】#{d_cal} calories\nThat's the end of the tutorial!\nIn the future, you can text me 'Track' or 'Log' to log your meal info."
+  elsif session[:last_msg] == 'default'
     if include_keywords body, greeting_kwd
-  		message = "Hi there, it's Diet Bot. My app helps you log your meals.\n
-      Start by saying 'Track meal'."
+  		message = "Hi there, it's Diet Bot. My app helps you log your meals.\nLog meal by saying 'Track meal'.\nIf you are new to me, don't worry. Start tutorial by saying 'tutorial'"
   	elsif include_keywords body, who_kwd
-  		message = "It's Diet Bot created by Daniel here!\n
-  						If you want to know more about me, you can say 'fact'."
+  		message = "It's Diet Bot created by Daniel here!\nIf you want to know more about me, you can say 'fact'."
   	elsif include_keywords body, what_kwd
-  		message = "I'm Diet Bot and can help you log your meals.\n
-      Start by saying 'Track meal'."
+  		message = "I'm Diet Bot and can help you log your meals.\nStart by saying 'Track meal'."
   	elsif include_keywords body, where_kwd
   		message = "I'm in Pittsburgh~<br>"
   	elsif include_keywords body, when_kwd
   		message = "The bot is made in Spring 2020.<br>"
   	elsif include_keywords body, why_kwd
   		message = "It was made for class project of 49714-pfop.<br>"
-  	elsif include_keywords body, joke_kwd
-  		array_of_lines = IO.readlines("jokes.txt")
-  		message = array_of_lines.sample
+  	# elsif include_keywords body, joke_kwd
+  	# 	array_of_lines = IO.readlines("jokes.txt")
+  	# 	message = array_of_lines.sample
   	elsif include_keywords body, fact_kwd
   		array_of_lines = IO.readlines("facts.txt")
   		message = array_of_lines.sample
-  	elsif include_keywords body, funny_kwd
-  		message = "Nice one right lol."
+  	# elsif include_keywords body, funny_kwd
+  	# 	message = "Nice one right lol."
     elsif include_keywords body, summary_kwd
       message = get_summary
     elsif include_keywords body, diet_kwd
       session[:last_msg] = 'log_meal'
       message = "Sure, what food did you have?"
   	else
-      message = "Sorry, your input cannot be understood by the bot.<br>
-  						Try using two parameters called Body and From."
+      message = "Sorry, your input cannot be understood by the bot.<br>"
     end
 
   # meal logging
   elsif session[:last_msg] == 'log_meal' || session[:last_msg] == 'further_log_meal'
     temp = get_nutrients body
+    temp = temp[0]
+    update_log temp[1], temp[2], temp[3]
     send_sms temp, $current_sender
     if session[:last_msg] != 'further_log_meal'
       session[:last_msg] = 'default'
@@ -157,14 +220,14 @@ def get_nutrients body
       total_cal += food['nf_calories']
     end
     #save changes to json file
-    update_log total_cal, total_protein, total_fat
+    # update_log total_cal, total_protein, total_fat
 
     total_fat = total_fat.to_i
     total_protein = total_protein.to_i
     total_cal = total_cal.to_i
 
     msg = "You consumed approximately #{total_cal} calories in total with #{total_protein} grams of protein and #{total_fat} grams of fat."
-    return msg
+    return msg, total_cal, total_protein, total_fat
   end
 end
 
@@ -204,8 +267,9 @@ class CustomHandler < AlexaSkillsRuby::Handler
   on_intent("LOG_MEAL") do
     food_log = request.intent.slots["food_log"]
     # add a response to Alexa
-    res = get_nutrients food_log
-
+    results = get_nutrients food_log
+    res = results[0]
+    update_log results[1], results[2], results[3]
     response.set_output_speech_text("#{res}")
     # create a card response in the alexa app
     response.set_simple_card("Diet Bot App", "#{res}")
@@ -344,6 +408,9 @@ end
 get "/ini" do
   hash = {
     # "foods" => [],
+    "breakfast_cal" => 0,
+    "lunch_cal" => 0,
+    "dinner_cal" => 0,
     "cal_sum" => 0,
     "pro_sum" => 0,
     "fat_sum" => 0,
