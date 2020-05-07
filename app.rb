@@ -100,7 +100,7 @@ def determine_response body
 	# joke_kwd = ['joke']
 
 	fact_kwd = ['fact']
-	# funny_kwd = ['lol', 'haha', 'hh']
+	funny_kwd = ['lol', 'haha', 'hh', 'cool']
   # weather_kwd = ['weather']
   diet_kwd = ['track diet', 'track', 'log']
   summary_kwd = ['summary', 'summarize']
@@ -184,8 +184,8 @@ def determine_response body
   	elsif include_keywords body, fact_kwd
   		array_of_lines = IO.readlines("facts.txt")
   		message = array_of_lines.sample
-  	# elsif include_keywords body, funny_kwd
-  	# 	message = "Nice one right lol."
+  	elsif include_keywords body, funny_kwd
+  		message = "😁"
     elsif include_keywords body, summary_kwd
       message = get_summary
     elsif include_keywords body, diet_kwd
