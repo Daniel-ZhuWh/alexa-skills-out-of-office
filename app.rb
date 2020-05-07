@@ -270,6 +270,7 @@ class CustomHandler < AlexaSkillsRuby::Handler
   on_launch() do
     response.set_output_speech_text("Hi there, I'm your diet bot.")
     logger.info 'Lauch request processed'
+    response.set_simple_card("Welcome!", "It's Diet Bot here.")
     response.should_end_session = false
   end
 
@@ -311,6 +312,14 @@ class CustomHandler < AlexaSkillsRuby::Handler
       <break time='100ms'/>I ate a hamburger just now.
       <break time='150ms'/>Calories and more data about the food will be responded to you.
       </speak>")
+    response.set_simple_card("Help info", "You can ask me to log your meal status by saying
+      LOG MEAL
+      and then saying what food you had.
+      For example, you can say
+      I HAD AN APPLE FOR BREAKFAST
+      or
+      I ATE A HAMBURGER JUST NOW
+      Calories and more data about the food will be responded to you.")
     logger.info 'HelpIntent processed'
     response.should_end_session = false
   end
