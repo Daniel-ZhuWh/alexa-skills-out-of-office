@@ -324,31 +324,6 @@ class CustomHandler < AlexaSkillsRuby::Handler
     response.should_end_session = false
   end
 
-  # on_intent("BACK_IN") do
-  #
-	# 	# Access the slots
-  #   slots = request.intent.slots
-  #   puts slots.to_s
-  #
-	# 	# Duration is returned in a particular format
-	# 	# Called ISO8601. Translate this into seconds
-  #   duration = ISO8601::Duration.new( request.intent.slots["duration"] ).to_seconds
-  #
-	# 	# This will downsample the duration from a default seconds
-	# 	# To...
-  #   if duration > 60 * 60 * 24
-  #     days = duration/(60 * 60 * 24).round
-  #     response.set_output_speech_text("I've set you away for #{ days } days")
-  #   elsif duration > 60 * 60
-  #     hours = duration/(60 * 60 ).round
-  #     response.set_output_speech_text("I've set you away for #{ hours } hours")
-  #   else
-  #     mins = duration/(60).round
-  #     response.set_output_speech_text("I've set you away for #{ mins } minutes")
-  #   end
-  #   logger.info 'BackIn processed'
-  #   update_status "BACK_IN", duration
-  # end
 end
 
 # ----------------------------------------------------------------------
@@ -360,17 +335,7 @@ get '/' do
   404
 end
 
-# while true do
-#   puts "3 seconds"
-#   sleep 3
-# end
-# THE APPLICATION ID CAN BE FOUND IN THE
-# get '/test/scheduler' do
-#   while true do
-#     puts "3 seconds"
-#     sleep 3
-#   end
-# end
+
 
 get "/sms/incoming" do
   # sms intercation through twilio
